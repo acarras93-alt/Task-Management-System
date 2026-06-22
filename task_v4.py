@@ -263,43 +263,55 @@ class TaskRepository:
     
     def save_tasks(self, tasks: list[Task]) -> None:
         """Saves a list of Tasks objects into a JSON file."""
-        tasks_data = []
+        try:
+            tasks_data = []
         
-        for task in tasks:
-            tasks_data.append(task.to_dict())
+            for task in tasks:
+                tasks_data.append(task.to_dict())
         
-        with self.file_path.open("w", encoding="utf-8") as file:
-            json.dump(tasks_data, file, indent=4)
+            with self.file_path.open("w", encoding="utf-8") as file:
+                json.dump(tasks_data, file, indent=4)
+            
+        except OSError as error:
+            raise TasksStorageError("Tasks could not be saved.") from error
+            
     
     def load_tasks(self) -> list[Task]:
         """Loads tasks from a JSON file.
-        
+
         If the file does not exist, return an empty list.
-        
+
         Raises:
-            TaskStorageError: if the file cannot be read or contains invalid data.
+        TasksStorageError: if the file cannot be read or contains invalid data.
         """
         if not self.file_path.exists():
             return []
-        
+
         try:
             with self.file_path.open("r", encoding="utf-8") as file:
                 tasks_data = json.load(file)
-                
+
                 tasks = []
-                
+
                 for task_data in tasks_data:
                     task = Task.from_dict(task_data)
                     tasks.append(task)
-            
+
             return tasks
-        
+
         except json.JSONDecodeError as error:
-            raise TasksStorageError(f"Invalid JSON format in {self.file_path.name}: {error}") from error
-        
-        except (KeyError, TypeError, ValueError,  InvalidTaskStatusError) as error:
-            raise TasksStorageError(f"Invalid task data structure: {error}") from error
-        
+            raise TasksStorageError(
+                f"Invalid JSON format in {self.file_path.name}: {error}"
+            ) from error
+
+        except OSError as error:
+            raise TasksStorageError("Tasks could not be loaded.") from error
+
+        except (KeyError, TypeError, ValueError, InvalidTaskStatusError) as error:
+            raise TasksStorageError(
+                f"Invalid task data structure: {error}"
+            ) from error
+            
 # INTERFACE
 def show_menu() -> None:
     print("\n=== TASKS MANAGER SYSTEM (V4) ===")
@@ -446,7 +458,7 @@ def main() -> None:
             try:
                 manager.update_task_status(task_id, new_status)
                 storage.save_tasks(manager.list_tasks())
-                print("Task status updated sucessfully")
+                print("Task status updated successfully.")
             
             except TaskNotFoundError as error:
                 print(error)
@@ -461,7 +473,7 @@ def main() -> None:
             try:
                 manager.rename_task(task_id, new_title)
                 storage.save_tasks(manager.list_tasks())
-                print("New title updated sucessfully")
+                print("New title updated successfully.")
             
             except TaskNotFoundError as error:
                 print(error)
@@ -476,7 +488,7 @@ def main() -> None:
             try:
                 manager.update_task_description(task_id, new_description)
                 storage.save_tasks(manager.list_tasks())
-                print("Task description updated sucessfully")
+                print("Task description updated sucessfully.")
             
             except TaskNotFoundError as error:
                 print(error)
@@ -492,7 +504,7 @@ def main() -> None:
             try:
                 manager.update_task_details(task_id, new_title, new_description)
                 storage.save_tasks(manager.list_tasks())
-                print("Task content updated sucessfully")
+                print("Task content updated sucessfully.")
             
             except TaskNotFoundError as error:
                 print(error)

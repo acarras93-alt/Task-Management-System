@@ -196,7 +196,7 @@ class TaskManager:
         Raises:
             TaskAlreadyExistsError: if the task already exists
         """
-        if task.task_id in self._tasks_by_id:
+        if task.task_id not in self._tasks_by_id:
             raise TaskAlreadyExistsError(
                 f"Task with ID {task.task_id} already exists."
             )
@@ -278,7 +278,7 @@ def ask_positive_int(message: str) -> int:
             print("Invalid number.")
 
 def ask_task_data() -> Task:
-    task_id = ask_positive_int("Task ID:")
+    task_id = ask_positive_int("Task ID: ")
     title = ask_non_empty_text("Title: ")
     description = ask_non_empty_text("Description: ")
     status = ask_non_empty_text("Status: ")
