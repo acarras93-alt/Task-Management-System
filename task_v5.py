@@ -1,11 +1,5 @@
 """Task System V5
-Objetivos de esta versión:
-- El repositorio es la puerta de acceso a la colección de tareas
-- JSON es una implementación concreta del repositorio.
-- Memoria es otra implementación concreta ultil para los test.
-
-Arquitectura:
-
+Arquitectura por capas:
 - Domain:
     Task
 - Domain exceptions:
