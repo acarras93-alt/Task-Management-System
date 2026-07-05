@@ -158,8 +158,7 @@ class Task:
         self.description = new_description
 
     def to_dict(self) -> dict[str, int | str]:
-        """Convierte la entidad a un formato serializable.
-        """
+        """Convierte la entidad a un formato serializable."""
         return {
             "task_id": self.task_id,
             "title": self.title,
