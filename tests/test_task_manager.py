@@ -1,11 +1,11 @@
 import pytest
 
 from task_v4 import (
+    InvalidTaskStatusError,
     Task,
-    TaskManager,
     TaskAlreadyExistsError,
+    TaskManager,
     TaskNotFoundError,
-    InvalidTaskStatusError
 )
 
 
@@ -14,11 +14,10 @@ def create_task(task_id: int = 1, status: str = "pending") -> Task:
         task_id=task_id,
         title="Study Python",
         description="Practice pytest basics",
-        status=status
+        status=status,
     )
-    
-    
-    
+
+
 # First service test
 def test_add_task_stores_task_in_manager():
     manager = TaskManager()
@@ -30,7 +29,8 @@ def test_add_task_stores_task_in_manager():
 
     assert len(tasks) == 1
     assert tasks[0] == task
-    
+
+
 def test_add_duplicated_task_id_raises_error():
     manager = TaskManager()
     task = create_task()
@@ -41,6 +41,7 @@ def test_add_duplicated_task_id_raises_error():
     with pytest.raises(TaskAlreadyExistsError):
         manager.add_task(duplicated_task)
 
+
 def test_find_task_by_id_returns_correct_task():
     manager = TaskManager()
     task = create_task(task_id=1)
@@ -50,13 +51,15 @@ def test_find_task_by_id_returns_correct_task():
     found_task = manager.find_task_by_id(1)
 
     assert found_task == task
-    
+
+
 def test_find_task_by_id_raises_error_when_task_does_not_exist():
     manager = TaskManager()
 
     with pytest.raises(TaskNotFoundError):
         manager.find_task_by_id(999)
-        
+
+
 # Query test: filter by status
 def test_list_tasks_by_status_returns_only_matching_tasks():
     manager = TaskManager()
@@ -75,12 +78,14 @@ def test_list_tasks_by_status_returns_only_matching_tasks():
     assert task_1 in pending_tasks
     assert task_3 in pending_tasks
     assert task_2 not in pending_tasks
-    
+
+
 def test_list_tasks_by_invalid_status_raises_error():
     manager = TaskManager()
 
     with pytest.raises(InvalidTaskStatusError):
         manager.list_tasks_by_status("invalid")
+
 
 # Comannd tests: update and delete
 def test_update_task_status_changes_task_status():
@@ -95,11 +100,13 @@ def test_update_task_status_changes_task_status():
 
     assert updated_task.status == "completed"
 
+
 def test_update_task_status_raises_error_when_task_does_not_exist():
     manager = TaskManager()
 
     with pytest.raises(TaskNotFoundError):
         manager.update_task_status(999, "completed")
+
 
 def test_delete_task_removes_task_from_manager():
     manager = TaskManager()
@@ -110,7 +117,7 @@ def test_delete_task_removes_task_from_manager():
     manager.delete_task(1)
 
     assert manager.list_tasks() == []
-    
+
 
 def test_delete_task_raises_error_when_task_does_not_exist():
     manager = TaskManager()

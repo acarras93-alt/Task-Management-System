@@ -1,8 +1,17 @@
 # Task Manager System V5
 
+Gestor de tareas por consola: permite crear, consultar, editar, filtrar por estado
+y eliminar tareas, con persistencia JSON y pruebas automatizadas.
+
+Proyecto de aprendizaje de backend. **El punto de entrada actual es
+`task_v5.py`**; las versiones anteriores se conservan para mostrar la evolución.
+No requiere dependencias externas para ejecutar la aplicación. La última
+revisión local de las pruebas, el 21 de septiembre de 2026, obtuvo **40 tests
+correctos con Python 3.14.0**.
+
 ## 1. Descripción del proyecto
 
-Task Manager System es una aplicación backend de consola desarrollada en Python 3.12.
+Task Manager System es una aplicación backend de consola desarrollada en Python, revisada localmente con Python 3.14.0.
 
 El objetivo del proyecto es gestionar tareas mediante una arquitectura backend separada por responsabilidades, aplicando conceptos fundamentales de desarrollo profesional:
 
@@ -36,12 +45,11 @@ La finalidad no es testear todo de forma indiscriminada, sino proteger las parte
 El proyecto sigue una arquitectura backend separada por capas:
 
 ```text
-Domain
-→ Service
-→ Repository Interface
-→ Repository Implementations
-→ Console Interface
-→ main()
+Consola → TaskService → TaskRepository (contrato)
+                             ↑
+                    implementado por
+                ┌────────────┴─────────────┐
+       InMemoryTaskRepository    JSONTaskRepository
 ```
 
 ### 3.1 Domain
@@ -181,7 +189,10 @@ tests/test_task_domain.py
 tests/test_task_service.py
 ```
 
-También pueden existir tests adicionales para repositorios o persistencia JSON.
+Además, `tests/test_task.py`, `tests/test_task_manager.py` y
+`tests/test_task_repository.py` prueban la versión V4, incluida su persistencia
+JSON. El resultado conjunto de 40 tests incluye ambas versiones; no significa
+que el repositorio JSON de V5 tenga esa misma cobertura.
 
 ---
 
@@ -295,11 +306,19 @@ Por eso puedo usar InMemoryTaskRepository en tests y JSONTaskRepository en ejecu
 
 ## 11. Ejecución del proyecto
 
-Para ejecutar el programa principal:
+Desde la raíz del proyecto, en macOS o Linux:
 
 ```bash
-python3 task_v5.py
+python3.14 -m venv .venv
+source .venv/bin/activate
+python --version
+python -m pip install pytest ruff
+python task_v5.py
 ```
+
+En Windows, activa el entorno con `.venv\Scripts\Activate.ps1` desde PowerShell.
+pytest y Ruff son herramientas de desarrollo. Los datos se guardan en
+`task_data.json`, relativo al directorio desde el que se ejecuta el programa.
 
 ---
 
@@ -311,7 +330,7 @@ Para ejecutar toda la batería de tests:
 python3 -m pytest -q
 ```
 
-Resultado esperado:
+Resultado de la revisión local del 21 de septiembre de 2026:
 
 ```text
 40 passed
@@ -331,13 +350,13 @@ python3 -m pytest tests/test_task_service.py -q
 
 ## 13. Resultado actual
 
-Estado actual del proyecto:
+Resultado de la suite completa en la revisión indicada:
 
 ```text
 40 tests passed
 ```
 
-Esto significa que:
+Los tests existentes comprueban, dentro de su alcance:
 
 - Las reglas principales del dominio están protegidas.
 - Los casos de uso principales del servicio están protegidos.
@@ -345,6 +364,12 @@ Esto significa que:
 - El sistema tiene una base de testing defendible para portfolio backend.
 
 ---
+
+Para comprobar la calidad estática de la versión actual y las pruebas:
+
+```bash
+python -m ruff check task_v5.py tests
+```
 
 ## 14. Decisiones técnicas defendibles
 

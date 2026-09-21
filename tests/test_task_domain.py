@@ -1,6 +1,6 @@
 import pytest
 
-from task_v5 import Task, InvalidTaskStatusError
+from task_v5 import InvalidTaskStatusError, Task
 
 
 def test_create_task_with_valid_data():
